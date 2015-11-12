@@ -39,6 +39,23 @@ router.post('/api/v1/memories', function(req, res, next) {
   });
 })
 
+//GET ALL UNIQUE YEARS
+router.get('/api/v1/memories/years', function(req, res, next) {
+ pg.connect(conString, function(err, client, done) {
+   if (err) {
+     return console.error('error fetching client from pool', err);
+   }
+   console.log("connected to database");
+   client.query('SELECT DISTINCT year FROM memories', function(err, result) {
+     done();
+     if (err) {
+       return console.error('error running query', err);
+     }
+      res.send(result);
+   });
+ });
+});
+
 //GET ALL/:YEAR
 router.get('/api/v1/memories/:id', function(req ,res, next) {
   pg.connect(conString, function(err, client, done) {
