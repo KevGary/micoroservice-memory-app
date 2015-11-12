@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var pg = require('pg');
-var conString = "postgres://@localhost/memoriesapp";
+var conString = process.env.DATABASE_URL;
 
 //GET ALL
 router.get('/api/v1/memories', function(req, res, next) {
@@ -28,7 +28,7 @@ router.post('/api/v1/memories', function(req, res, next) {
       return console.error('error fetching client from pool', err);
     }
     console.log("connected to database");
-    client.query('INSERT INTO memories(old_days, these_days, year) VALUES($1, $2, $3) returning id', ['used to play with toys', 'now i make toys', '1994'], function(err, result) {
+    client.query('INSERT INTO memories(old_days, these_days, year) VALUES($1, $2, $3) returning id', [req.body.data.attributes.old_days, req.body.data.attributes.these_days, req.body.data.attributes.year], function(err, result) {
       done();
       if(err) {
         return console.error('error running query', err);
@@ -63,8 +63,7 @@ router.get('/api/v1/memories/:id', function(req ,res, next) {
       return console.error('error fetching client from pool', err);
     }
     console.log("connected to database");
-    console.log(req.params)
-    client.query('SELECT * FROM memories WHERE year = $1', ['1994'], function(err, result) {
+    client.query('SELECT * FROM memories WHERE year = $1', [req.params.id], function(err, result) {
       done();
       if (err) {
         return console.error('error running query', err);
